@@ -1,4 +1,4 @@
-# detect-fullscreen
+# detect_fullscreen
 
 A Zig library for detecting fullscreen applications on Windows. This library provides functions to find fullscreen windows and get their executable paths and friendly names.
 
