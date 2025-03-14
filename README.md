@@ -2,7 +2,7 @@
 
 A Zig library for detecting fullscreen applications on Windows. This library provides functions to find fullscreen windows and get their executable paths and friendly names.
 
-## Usage
+## Installation
 
 `zig fetch --save "git+https://github.com/redraskal/detect_fullscreen#v1.0.0"`
 
@@ -21,4 +21,20 @@ pub fn main() !void {
         std.debug.print("No fullscreen window found\n", .{});
     }
 }
+```
+
+## Building
+
+To build the static and dynamic libraries:
+
+```bash
+zig build
+```
+
+See the [examples](examples/) folder for more info.
+
+To run tests:
+
+```bash
+zig build test
 ```
