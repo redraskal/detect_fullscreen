@@ -11,10 +11,8 @@ pub export fn get_fullscreen_window_executable_path(buffer: [*c]u8, buffer_len: 
     // Convert C types to Zig types
     const zig_buffer_len = @as(*windows.DWORD, @ptrCast(buffer_len));
 
-    // Call the Zig function
     const result = root.getFullscreenWindowExecutablePath(buffer, zig_buffer_len);
 
-    // Convert Windows BOOL to C int (1 for success, 0 for failure)
     return if (result) 1 else 0;
 }
 
@@ -27,10 +25,8 @@ pub export fn get_fullscreen_window_friendly_name(buffer: [*c]u8, buffer_len: [*
     // Convert C types to Zig types
     const zig_buffer_len = @as(*windows.DWORD, @ptrCast(buffer_len));
 
-    // Call the Zig function
     const result = root.getFullscreenWindowFriendlyName(buffer, zig_buffer_len);
 
-    // Convert Windows BOOL to C int (1 for success, 0 for failure)
     return if (result) 1 else 0;
 }
 
