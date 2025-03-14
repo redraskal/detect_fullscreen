@@ -1,7 +1,4 @@
-on:
-  release:
-    types: [published]
-  workflow_dispatch:
+on: [push]
 
 jobs:
   libraries:
@@ -16,6 +13,6 @@ jobs:
         with:
           name: x86_64-windows
           path: |
-            zig-out
+            zig-out/**
             README.md
             LICENSE
