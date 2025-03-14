@@ -4,7 +4,7 @@ A Zig library for detecting fullscreen applications on Windows. This library pro
 
 ## Installation
 
-`zig fetch --save "git+https://github.com/redraskal/detect_fullscreen#v1.0.0"`
+`zig fetch --save git+https://github.com/redraskal/detect_fullscreen#v1.0.0`
 
 ```zig
 const std = @import("std");
