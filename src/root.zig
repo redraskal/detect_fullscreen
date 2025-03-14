@@ -13,6 +13,9 @@ const WS_EX_NOACTIVATE: windows.DWORD = 0x08000000;
 const GWL_EXSTYLE: i32 = -20;
 const LWA_ALPHA: windows.DWORD = 0x00000002;
 
+/// Constants for GetWindow function
+const GW_HWNDNEXT: u32 = 2;
+
 /// Windows types not defined in std.os.windows
 const COLORREF = windows.DWORD;
 const BYTE = u8;
@@ -35,16 +38,11 @@ const user32 = struct {
         lpdwProcessId: *windows.DWORD,
     ) callconv(windows.WINAPI) windows.DWORD;
 
-    /// https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-findwindowexw
-    pub extern "user32" fn FindWindowExW(
-        hWndParent: ?windows.HWND,
-        hWndChildAfter: ?windows.HWND,
-        lpszClass: ?[*:0]const u16,
-        lpszWindow: ?[*:0]const u16,
-    ) callconv(windows.WINAPI) ?windows.HWND;
-
     /// https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getdesktopwindow
     pub extern "user32" fn GetDesktopWindow() callconv(windows.WINAPI) windows.HWND;
+
+    /// https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getforegroundwindow
+    pub extern "user32" fn GetForegroundWindow() callconv(windows.WINAPI) ?windows.HWND;
 
     /// https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-iswindowvisible
     pub extern "user32" fn IsWindowVisible(
@@ -64,6 +62,12 @@ const user32 = struct {
         pbAlpha: ?*BYTE,
         pdwFlags: ?*windows.DWORD,
     ) callconv(windows.WINAPI) windows.BOOL;
+
+    /// https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindow
+    pub extern "user32" fn GetWindow(
+        hwnd: windows.HWND,
+        uCmd: u32,
+    ) callconv(windows.WINAPI) ?windows.HWND;
 };
 
 const kernel32 = struct {
@@ -148,16 +152,24 @@ pub fn isWindowFullscreen(hwnd: std.os.windows.HWND) bool {
 /// Finds a fullscreen window
 /// Returns the window handle if found, NULL otherwise
 pub fn findFullscreenWindow() ?windows.HWND {
-    var hwnd: ?windows.HWND = null;
-    while (true) {
-        hwnd = user32.FindWindowExW(null, hwnd, null, null);
-        if (hwnd == null) break;
+    const foreground_hwnd = user32.GetForegroundWindow();
+    if (foreground_hwnd != null and isWindowFullscreen(foreground_hwnd.?)) {
+        return foreground_hwnd;
+    }
 
+    // Traverse the Z-order starting from the current window
+    const hwnd = foreground_hwnd orelse user32.GetDesktopWindow();
+    return traverseZOrder(hwnd);
+}
+
+fn traverseZOrder(parent: windows.HWND) ?windows.HWND {
+    var hwnd = user32.GetWindow(parent, GW_HWNDNEXT);
+    while (hwnd != null) {
         if (isWindowFullscreen(hwnd.?)) {
             return hwnd;
         }
+        hwnd = user32.GetWindow(hwnd.?, GW_HWNDNEXT);
     }
-
     return null;
 }
 
