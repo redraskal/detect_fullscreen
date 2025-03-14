@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <windows.h>
+#include "detect_fullscreen.h"
 
 // Function pointer types for dynamic loading
-typedef int (*GetFullscreenWindowExecutablePathFunc)(char*, unsigned int*);
-typedef int (*GetFullscreenWindowFriendlyNameFunc)(char*, unsigned int*);
+typedef int (*GetFullscreenWindowExecutablePathFunc)(char*, unsigned int);
+typedef int (*GetFullscreenWindowFriendlyNameFunc)(char*, unsigned int);
 
 int main() {
     HMODULE dll = LoadLibrary("detect_fullscreen.dll");
@@ -23,10 +24,9 @@ int main() {
     }
     
     char buffer[MAX_PATH];
-    unsigned int buffer_len = MAX_PATH;
     
-    int result = get_path_func(buffer, &buffer_len);
-    if (result) {
+    int result = get_path_func(buffer, MAX_PATH);
+    if (result == 0) {
         printf("Fullscreen window found: %s\n", buffer);
     } else {
         printf("No fullscreen window found or error occurred\n");
@@ -43,10 +43,9 @@ int main() {
     }
     
     char friendly_buffer[MAX_PATH];
-    unsigned int friendly_buffer_len = MAX_PATH;
     
-    result = get_name_func(friendly_buffer, &friendly_buffer_len);
-    if (result) {
+    result = get_name_func(friendly_buffer, MAX_PATH);
+    if (result == 0) {
         printf("Fullscreen window friendly name: %s\n", friendly_buffer);
     } else {
         printf("Could not get friendly name\n");
